@@ -7,7 +7,7 @@ Created on Thu Dec  7 21:28:54 2017
 #-----------Scientific Library-------
 import math
 import numpy as np
-#import scipy.optimize
+import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
@@ -23,7 +23,7 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
         zi=z
         D28=astro.LUD(zi)/1.e28
 
-        k=0.
+        k=1.8
 
         n_dj=0.
         t_djs=0.
@@ -39,7 +39,7 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
 
 
 
-        Band={'X-ray': 1e18,'Optical': 1e15,'Radio': 1e9, 'GeV': 2.4e23}
+        Band={'X-ray': 1e18,'Optical': 1e15,'Radio': 225e9, 'GeV': 2.4e23}
 #        Time={'input':tday, 'adjust':10.0**lgtday}
         Dynmodel={'analytical': 1,'differential': 2}
         with_SSC={'Yes':1, 'No':0}
@@ -55,6 +55,11 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
         nu_unit='Hz'
         jet_break='Yes'
         inj_model='fallback'
+
+        SSC = 'No'
+        XIC = 'No'
+        Smooth = 'No'
+
 
 #-------refresh output parameters for jet
         t_dec=1.0
@@ -128,7 +133,7 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
 
 #-------jet, LoS, view angle
         theta_obs_j=0.
-        theta_j=10.
+        theta_j=4.445
         theta_obs=theta_obs_j
         thetaj=theta_j/cgs.deg
         thetaobs=theta_obs/cgs.deg
@@ -139,6 +144,8 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
             theta_view=(thetaobs - thetaj)
         m0=1.e-5
         dm=0.0
+        Ne0=0.0
+        dNe=0.0
 #-------true jet energy: E_j=E_iso*f_b
         Ej=Eiso*fb
         Mej0=Ej/((Gm0-1.)*cgs.c**2.0)
@@ -152,7 +159,8 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
         dE=0.0
 #        m0=2.*cgs.pi*R0**3.*(1.-math.cos(theta_j))*n*cgs.mp/3.
         for i in range(1,inum):
-            n1=n18*(Rt[i]/1.e18)**(-k)
+            ni=n18*(Rt[i]/1.e18)**(-k)
+            n1=ni
             if (i==1):
                 Gmt[i]=Gm0
                 beta=math.sqrt(1.-1/Gmt[i]**2.0)
@@ -169,7 +177,10 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
                 else:
 #-------------------if (dynamic_model=="differential")
                     tj=t[i-1]
-                    if ((tj > t_ej) and (tj< t_ejf)):
+                    if (inj_model == 'No'):
+                        dE=0.
+                    
+                    elif ((tj > t_ej) and (tj< t_ejf)):
                         ts=t_ej
                         if (inj_model == 'fallback'):
                             tp=t_ejp
@@ -199,18 +210,18 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
             if (n_dj>0.) and (ti>=t_djs) and (tj<=t_dje):
                 n1=n_dj
             else:
-                n1=n18
+                n1=ni
 
 
 #-----------t_dec and t_Sed-------------------
             if ((mt-dm)*Gmt[i-1] <= Mej0) and (mt*Gmt[i] > Mej0):
-#                print "### Deceleration:", Rt[i-1], grb.Rdec(Gm0,n1,Eiso), ti/Tunits[time_unit]
+#                print("### Deceleration:", Rt[i-1], grb.Rdec(Gm0,n1,Eiso), ti/Tunits[time_unit])
                 t_dec=ti/Tunits[time_unit]
 
             if ((mt-dm) *cgs.c**2 <= Eiso*fb) and (mt*cgs.c**2 > Eiso*fb):
                 Rsed0=grb.Rsed(n1,Eiso*fb)
 #                if (Rt[i-1] <= Rsed0) and (Rt[i] > Rsed0):
-#                print "### Sedov:", Rt[i-1], Rsed0, ti/Tunits[time_unit], Gmt[i]
+#                print("### Sedov:", Rt[i-1], Rsed0, ti/Tunits[time_unit], Gmt[i])
                 t_Sed=ti/Tunits[time_unit]
 
 #-----------Internal energy---------
@@ -254,8 +265,6 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
 
             Y_SSC = 0.
             Uph=1.
-            SSC = 'No'
-            XIC = 'No'
             if SSC == 'Yes':
                 if gm_c <= gm_m:
                     eta_e = 1.
@@ -329,13 +338,13 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
 #-----------t_min, t_col and t_colmin, t_jet
             if (i>1):
                 if ((v - vm) * (v - vm0) <= 0.0 ):
-#                    print "### time for vm cross:", Rt[i-1], ti/Tunits[time_unit]
+#                    print("### time for vm cross:", Rt[i-1], ti/Tunits[time_unit])
                     t_min=ti/Tunits[time_unit]
                 if ((v - vc) * (v - vc0) <= 0.0 ):
-#                    print "### time for vc cross:", Rt[i-1], ti/Tunits[time_unit]
+#                    print("### time for vc cross:", Rt[i-1], ti/Tunits[time_unit])
                     t_col=ti/Tunits[time_unit]
                 if ((vc - vm) * (vc0 - vm0) <= 0.0 ):
-#                    print "### time for vc=vm:", Rt[i-1], ti/Tunits[time_unit]
+#                    print("### time for vc=vm:", Rt[i-1], ti/Tunits[time_unit])
                     t_colmin=ti/Tunits[time_unit]
 #-----------replace vm0 and vc0 for next loop
             vm0=vm
@@ -344,13 +353,13 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
             if (with_jetbreak[jet_break]==1):
                 if (thetaj < (1./GM21) ):
                     if (fj == 1.):
-#                        print "### jet break time:", ti/Tunits[time_unit]
+#                        print("### jet break time:", ti/Tunits[time_unit])
                         t_jet=ti/Tunits[time_unit]
                     fj=thetaj**2. /(1./GM21**2.)
 
 #-----------Corrections on off-axis jet for flux, see Salafia et al. 2016, arXiv:1601.03735
-	    if (thetaj<1./GM21):
-		thetaj = 1./GM21
+            if (thetaj<1./GM21):
+                thetaj = 1./GM21
 
             thetajs=thetaj-1/GM21
             if (thetaobs <= thetajs):
@@ -365,12 +374,20 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
             Pvm=grb.Pvmax(GM21,Bc)
 
 #-----------Corrections on flux due to jet break effect
-            Fvm=grb.Fvmax(Pvm,n1,Ri,D28,zi)*fj*fDN /cgs.uJy
+            Ne=mt/(cgs.mp*fb) 
+            Fvm=(1+zi)*Ne*Pvm/(4.*cgs.pi*(D28*1e28)**2.)*fj*fDN /cgs.uJy
+
+#            Fvm=grb.Fvmax(Pvm,n1,Ri,D28,zi)*fj*fDN /cgs.uJy
 
             Fvm_IC=1.
             fviewF=fview**3.
 
-            Fvti=fviewF *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
+#            Fvti=fviewF *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
+            if (Smooth=='Yes'):
+                Fvti=fviewF *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
+            else:
+                Fvti=fviewF *grb.Fv_sbpl(v/fview,va,vm,vc,Fvm,pp)  *Funit
+
             if (v/fview>=vMax):
                 if (v/fview/vMax > 300.):
                     Fvti=Fvti*np.exp(-300.+1.)
@@ -408,19 +425,25 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
                 nu_cool=vc/Nuunits[nu_unit] *fview
 #---------------Spectral index
 #                dv = 1.05
-#                Fvtip = fviewF *grb.Fv(dv* v/fview,va,vm,vc,Fvm,pp)  *Funit
+#                if (self.Smooth=='Yes'):
+#                    Fvtip=fviewF *grb.Fv(dv* v/fview,va,vm,vc,Fvm,pp) *Funit
+#                else:
+#                    Fvtip=fviewF *grb.Fv_sbpl(dv* v/fview,va,vm,vc,Fvm,pp) *Funit
 #                dF = Fvtip/Fvti
 #                lgdF = math.log(dF,10)
 #                lgdv = math.log(dv,10)
 #                print "###[Spec Index]:",lgdF/lgdv
 
 #---------------Table for critical syncrotron frequecies
-#                Fvva=fview**3. *grb.Fv(va,va,vm,vc,Fvm,pp)
-#                Fvvm=fview**3. *grb.Fv(vm,va,vm,vc,Fvm,pp)
-#                Fvvc=fview**3. *grb.Fv(vc,va,vm,vc,Fvm,pp)
-                Fvva=fviewF *grb.Fv(va,va,vm,vc,Fvm,pp)
-                Fvvm=fviewF *grb.Fv(vm,va,vm,vc,Fvm,pp)
-                Fvvc=fviewF *grb.Fv(vc,va,vm,vc,Fvm,pp)
+                if (Smooth=='Yes'):
+                    Fvva=fviewF *grb.Fv(va,va,vm,vc,Fvm,pp)
+                    Fvvm=fviewF *grb.Fv(vm,va,vm,vc,Fvm,pp)
+                    Fvvc=fviewF *grb.Fv(vc,va,vm,vc,Fvm,pp)
+                else:
+                    Fvva=fviewF *grb.Fv_sbpl(va,va,vm,vc,Fvm,pp)
+                    Fvvm=fviewF *grb.Fv_sbpl(vm,va,vm,vc,Fvm,pp)
+                    Fvvc=fviewF *grb.Fv_sbpl(vc,va,vm,vc,Fvm,pp)
+                
                 for j in range(0,inump):
                     lgNua[j]=np.log10(nu_a)
                     lgNum[j]=np.log10(nu_min)
@@ -431,8 +454,11 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
 
                 for j in range(1, inumv):
                     vj=lgNu[j]
-#                    Fvtj=fview**3. *grb.Fv(vj/fview,va,vm,vc,Fvm,pp)
-                    Fvtj=fviewF *grb.Fv(vj/fview,va,vm,vc,Fvm,pp)
+                    if (Smooth=='Yes'):
+                        Fvtj=fviewF *grb.Fv(vj/fview,va,vm,vc,Fvm,pp)
+                    else:
+                        Fvtj=fviewF *grb.Fv_sbpl(vj/fview,va,vm,vc,Fvm,pp)
+
                     if (vj/fview>=vMax):
                         if (vj/fview/vMax > 300.):
                             Fvtj=Fvtj*np.exp(-300.+1.)
@@ -527,6 +553,9 @@ def FS_flux(z,E52,Gm0,n18,epsilon_B,epsilon_e,p, Band_mode, tobs):
         lgL=lgL+np.log10(v*cgs.uJy)
 
         return lgL
+
+
+#        return lgLC
 
 #        np.savetxt(file_dir+'Output/vat_n.txt',vat) #t, va,vm,vc
 #        np.savetxt(file_dir+'Output/Coolingt_n.txt',Coolingt)
