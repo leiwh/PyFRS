@@ -14,14 +14,16 @@
 #!/usr/bin/python
 # Filename: cgs.py
 from astropy import constants as const
+import numpy as np
 
 def about():
-	print 'List of the constants in cgs.'
+	print("List of the constants in cgs")
 version = '2.0'
 
 def help():
-    print 'list'
+    print("list")
 
+zero=np.exp(-700)
 day=24.0*3600.0
 year=day*365.0
 deg=180.0/3.14159
