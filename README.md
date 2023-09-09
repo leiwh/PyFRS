@@ -45,12 +45,5 @@ The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 
 
 
-
-# 数据的格式
-input obs data format: [day, mJy] for radio, and [day, erg/s/cm^2] for X-ray and optical
-
-导出数据的格式为：
-数据格式[log t(s), log Flux (erg/s/cm^2)]
-
 # References
 Lei, W.-H., Yuan, Q., Zhang, B., & Wang, D. 2016, ApJ, 816, 20
