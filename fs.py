@@ -636,7 +636,7 @@ def FS_flux(time_obs,nu_obs,**Z):
             frac = (t-t_left)/(t_right-t_left)
             estimate_model_log_flux[i] = flux_left + (flux_right-flux_left)*frac
         # print('index={}, logfv={}'.format(index,estimate_model_log_flux[i]))
-    return estimate_model_log_flux
+    return 10**estimate_model_log_flux
     
 
 def binary_search(search_list,search_target):
