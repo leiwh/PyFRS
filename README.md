@@ -41,7 +41,7 @@ The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 - `n18`          CNM density at 10^18cm
 - `p`            Electron energy distribution index
 - `epsilon_e`    Fraction of the shock energy into electrons
-- `epsilon_B`    Fraction of the shock energy in magnetic fiel
+- `epsilon_B`    Fraction of the shock energy in magnetic field
 
 
 
