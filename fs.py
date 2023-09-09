@@ -22,35 +22,35 @@ def FS_flux(time_obs,nu_obs,**Z):
 
 #-------Unpack parameters
     for key,value in Z.items():
-        if key == 'z':
+        if key == 'z':              # Redshift
             z = value
-        elif key == 'k':
+        elif key == 'k':            # Medium density profile index
             k = value
-        elif key == 'SSC':
+        elif key == 'SSC':          # SSC
             if value == 1:
                 SSC = 'Yes'
             else:
                 SSC = 'No'
-        elif key == 'XIC':
+        elif key == 'XIC':          # EIC
             if value == 1:
                 XIC = 'Yes'
             else:
                 XIC = 'No'
-        elif key == 'E0':
+        elif key == 'E0':           # Isotropic-equivalent energy in 10^52 erg
             E52 = value/1.0e52
-        elif key == 'Gamma0':
+        elif key == 'Gamma0':       # Initial bulk Lorentz factor
             Gm0 = value
-        elif key == 'theta_j':
+        elif key == 'theta_j':      # Jet opening angle
             theta_j = value
-        elif key == 'theta_obs':
+        elif key == 'theta_obs':    # Viewing angle in deg
             theta_obs = value
-        elif key == 'n18':
+        elif key == 'n18':          # CNM density at 10^18cm
             n18 = value
-        elif key == 'p':
+        elif key == 'p':            # Electron energy distribution index
             p = value
-        elif key == 'epsilon_e':
+        elif key == 'epsilon_e':    # Fraction of the shock energy into electrons
             epsilon_e = value
-        elif key == 'epsilon_B':
+        elif key == 'epsilon_B':    # Fraction of the shock energy in magnetic field
             epsilon_B = value
 
 
@@ -608,7 +608,7 @@ def FS_flux(time_obs,nu_obs,**Z):
 
 #================end of Forward shock==================
     if SSC=='Yes':
-        lgFv = lgFv = np.log10(np.power(10.0,lgFv-3.0)+np.power(10.0,lgFv_SSC-3.0))       # convert unit to "mJy"
+        lgFv = np.log10(np.power(10.0,lgFv-3.0)+np.power(10.0,lgFv_SSC-3.0))       # convert unit to "mJy"
     else:
         lgFv = lgFv-3.0   # convert unit to "mJy"
 
