@@ -10,7 +10,9 @@ fs.py computes synchrotron emission from the forward shock of a jet/outflow. It 
  - Arbitray medium density profile;
  - Arbitray viewing angles;
  - Self-absorbtion, SSC and EIC;
- - Jet break effect.
+ - Jet break effect;
+ - Energy injection;
+ - Density jump.
 
 rs.py computes synchrotron emission from the reverse shock of a jet/outflow.
 
