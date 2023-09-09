@@ -3,7 +3,7 @@ This python code is dedicated to compute the multiband synchrotron emissions fro
 
 
 ## Features
-- fs.py computes synchrotron emission from the forward shock of a jet/outflow. It includes:
+fs.py computes synchrotron emission from the forward shock of a jet/outflow. It includes:
 
  - Synchrotron emission from relativistic jet or un-relativistic outflow;
  - Jet/outflow dynamics cover Coasting, deceleration and Newtonian phases;
@@ -12,9 +12,9 @@ This python code is dedicated to compute the multiband synchrotron emissions fro
  - Self-absorbtion, SSC and EIC;
  - Jet break effect.
 
-- rs.py computes synchrotron emission from the reverse shock of a jet/outflow.
+rs.py computes synchrotron emission from the reverse shock of a jet/outflow.
 
-- Future:
+Future:
 
  - Neutrino emission
 
