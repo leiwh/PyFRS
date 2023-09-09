@@ -7,8 +7,8 @@ fs.py computes synchrotron emission from the forward shock of a jet/outflow. It 
 
  - Synchrotron emission from relativistic jet or un-relativistic outflow;
  - Jet/outflow dynamics cover Coasting, deceleration and Newtonian phases;
- - Arbitray medium density profile;
- - Arbitray viewing angles;
+ - Arbitrary medium density profile;
+ - Arbitrary viewing angles;
  - Self-absorbtion, SSC and EIC;
  - Jet break effect;
  - Energy injection;
