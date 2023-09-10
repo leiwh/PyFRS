@@ -20,6 +20,13 @@ Future:
 
  - Neutrino emission
 
+
+## Installing
+Clone the repository:
+```
+git clone https://github.com/leiwh/PyFS
+```
+
 ## Usage
 The forward and reverse shock modules can be used separately.
 
