@@ -1,5 +1,5 @@
 ## PyFS
-This python code is dedicated to compute the multiband synchrotron emissions from the Forward-Reverse Shocks of a GRB or TDE jet.
+This python code is dedicated to compute the multi-band synchrotron emissions from the Forward-Reverse Shocks of a GRB or TDE jet.
 
 
 ## Features
@@ -8,7 +8,7 @@ fs.py computes synchrotron emission from the forward shock of a jet/outflow. It 
  - Synchrotron emission from relativistic jet or un-relativistic outflow;
  - Jet/outflow dynamics cover Coasting, deceleration and Newtonian phases;
  - Arbitrary medium density profile;
- - Arbitrary viewing angles;
+ - Arbitrary viewing angles (on and off-axis);
  - Self-absorbtion, SSC and EIC;
  - Jet break effect;
  - Energy injection;
@@ -20,8 +20,10 @@ Future:
 
  - Neutrino emission
 
-## Using
-In your python code, import the library with `import fs`.  
+## Usage
+The forward and reverse shock modules can be used separately.
+
+For forward shock (FS), import the library with `import fs` in your python code.  
 
 The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb` for a simple example.
 
@@ -45,7 +47,8 @@ The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 - `epsilon_e`    Fraction of the shock energy into electrons
 - `epsilon_B`    Fraction of the shock energy in magnetic field
 
-
+Examples for reverse-shock (`rs.py`) are still in preparation, will be release soon.
 
 # References
 Lei, W.-H., Yuan, Q., Zhang, B., & Wang, D. 2016, ApJ, 816, 20
+Zhu, Z.-P., Xu, D., Fynbo, J. P. U., et al. 2023, ApJ, 948, 30
