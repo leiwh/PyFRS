@@ -54,7 +54,7 @@ The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 - `epsilon_e`    Fraction of the shock energy into electrons
 - `epsilon_B`    Fraction of the shock energy in magnetic field
 
-Examples for reverse-shock (`rs.py`) are still in preparation, will be release soon.
+Examples for reverse-shock (`rs.py`) are still in preparation, will be released soon.
 
 # References
 Lei, W.-H., Yuan, Q., Zhang, B., & Wang, D. 2016, ApJ, 816, 20
