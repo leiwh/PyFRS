@@ -27,6 +27,8 @@ Clone the repository:
 git clone https://github.com/leiwh/PyFS
 ```
 
+It runs properly with anaconda and VS Code.
+
 ## Usage
 The forward and reverse shock modules can be used separately.
 
