@@ -58,4 +58,5 @@ Examples for reverse-shock (`rs.py`) are still in preparation, will be release s
 
 # References
 Lei, W.-H., Yuan, Q., Zhang, B., & Wang, D. 2016, ApJ, 816, 20
+
 Zhu, Z.-P., Xu, D., Fynbo, J. P. U., et al. 2023, ApJ, 948, 30
