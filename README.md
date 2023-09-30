@@ -22,6 +22,12 @@ Future:
 
 
 ## Installing
+
+Install with pip
+```
+pip install PyFRS
+```
+
 Clone the repository:
 ```
 git clone https://github.com/leiwh/PyFS
