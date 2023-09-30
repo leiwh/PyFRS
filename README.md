@@ -28,7 +28,7 @@ Clone the repository:
 git clone https://github.com/leiwh/PyFS
 ```
 
-Install with pip
+Or install with pip:
 ```
 pip install PyFRS
 ```
