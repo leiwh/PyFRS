@@ -25,7 +25,7 @@ Future:
 
 Clone the repository:
 ```
-git clone https://github.com/leiwh/PyFS
+git clone https://github.com/leiwh/PyFRS
 ```
 
 Or install with pip:
