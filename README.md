@@ -1,4 +1,4 @@
-## PyFS
+## PyFRS
 This python code is dedicated to compute the multi-band synchrotron emissions from the Forward-Reverse Shocks of a GRB or TDE jet.
 
 
