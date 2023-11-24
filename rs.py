@@ -101,8 +101,12 @@ def RS_flux(time_obs,nu_obs,**Z):
     Gmt=np.logspace(2.,-5.,inum)
 
     para=np.zeros((inum,19))
+
     lgt=np.logspace(-4., 3.0,inum)
-    lgFv=np.logspace(1.,6.,inum)
+    lgFv=np.logspace(1.,6.,inum)*np.ones((len(vlist),inum))
+#    lgFv_SSC=np.logspace(1.,6.,inum)*np.ones((len(vlist),inum))
+
+#    lgFv=np.logspace(1.,6.,inum)
 #        lgFv_SSC=np.logspace(1.,6.,inum)
 
 #    lgNu=np.logspace(7.,30.,inumv)
@@ -124,12 +128,12 @@ def RS_flux(time_obs,nu_obs,**Z):
 
 
 #-------start calculation
-    Gm0= Gamma0
+#    Gm0= Gamma0
     Gmt[1]=Gm0
 
     R0=Rt[1]
     Eiso=1.e52 *E52
-    t90=T90
+#    t90=T90
     t[0]=0.
     t[1]=R0/(2.*Gm0**2.0*cgs.c*cgs.day)
     to[0]=0.
@@ -333,7 +337,8 @@ def RS_flux(time_obs,nu_obs,**Z):
 #                else:
 #                    Fvti=Fvti*np.exp(-v/fview/vMax+1.)
 #
-            lgFv[i]=np.log10(Fvti)
+            lgFv[l][i]=np.log10(Fvti)
+#            lgFv[i]=np.log10(Fvti)
 #            Fvt[i,0]=lgt[i]
 #            Fvt[i,1]=lgFv[i]
 
