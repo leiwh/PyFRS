@@ -11,9 +11,11 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
-from . import cgs
-from . import astro
-from . import grb
+try:
+    from . import cgs,astro,grb
+except ImportError:
+    import cgs,astro,grb
+
 
 
 
