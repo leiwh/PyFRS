@@ -11,9 +11,9 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
-import cgs
-import astro
-import grb
+from . import cgs
+from . import astro
+from . import grb
 
 
 
