@@ -9,9 +9,10 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
-import cgs
-import astro
-import grb
+try:
+    from . import cgs,astro,grb
+except ImportError:
+    import cgs,astro,grb
 
 
 #def RS_flux(self):
@@ -456,36 +457,7 @@ def RS_flux(time_obs,nu_obs,**Z):
                 vline = iline
                 break
         model_log_time = lgt
-        
-        index = binary_search(model_log_time,t)
-        if index == 0:
-            estimate_model_log_flux[i] = -99.0
-            # print('Left bound!')
-        elif index == len(model_log_time)-1:
-            estimate_model_log_flux[i] = 99.0
-            # print('Right bound!')
-        else:
-            t_left = model_log_time[index]
-            t_right = model_log_time[index+1]
-            flux_left = lgFv[vline][index]
-            flux_right = lgFv[vline][index+1]
-            frac = (t-t_left)/(t_right-t_left)
-            estimate_model_log_flux[i] = flux_left + (flux_right-flux_left)*frac
-        # print('index={}, logfv={}'.format(index,estimate_model_log_flux[i]))
-    return 10**estimate_model_log_flux
+        estimate_model_log_flux[i] = np.interp(t,model_log_time,lgFv[vline],left=-99.0,right=99.0)
     
+    return 10**estimate_model_log_flux
 
-def binary_search(search_list,search_target):
-    head, tail = 0, len(search_list)
-    while tail - head > 1:
-        mid = (head+tail)//2
-        if search_target < search_list[mid]:
-            tail = mid
-        if search_target > search_list[mid]:
-            head = mid
-        if search_target == search_list[mid]:
-            index = mid
-            break
-    else:
-        index = head
-    return index
