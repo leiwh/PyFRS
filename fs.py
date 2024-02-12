@@ -29,15 +29,17 @@ def FS_flux(time_obs,nu_obs,**Z):
         elif key == 'k':            # Medium density profile index
             k = value
         elif key == 'SSC':          # SSC
-            if value == 1:
-                SSC = 'Yes'
-            else:
-                SSC = 'No'
+            # if value == 1:
+            #     SSC = 'Yes'
+            # else:
+            #     SSC = 'No'
+            SSC = value
         elif key == 'XIC':          # EIC
-            if value == 1:
-                XIC = 'Yes'
-            else:
-                XIC = 'No'
+            # if value == 1:
+            #     XIC = 'Yes'
+            # else:
+            #     XIC = 'No'
+            XIC = value
         elif key == 'E0':           # Isotropic-equivalent energy in 10^52 erg
             E52 = value/1.0e52
         elif key == 'Gamma0':       # Initial bulk Lorentz factor
