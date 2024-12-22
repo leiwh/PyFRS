@@ -72,7 +72,7 @@ The main function of interest is`rs.RS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 
 3. Fnu=rs.RS_flux(t, nu, **Z) is an array, same size as t and nu, the model flux in mJy at each time and frequency.
 
-4. For forward shock afterglows `Z` has 12 required keyword arguments:
+4. For reverse shock afterglows `Z` has 12 required keyword arguments:
 
 - `z`            Redshift
 - `k`            Medium density profile index
