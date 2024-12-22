@@ -38,6 +38,7 @@ It runs properly with anaconda and VS Code.
 ## Usage
 The forward and reverse shock modules can be used separately.
 
+### Forward Shock (FS)
 For forward shock (FS), import the library with `import fs` in your python code.  
 
 The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb` for a simple example.
@@ -63,6 +64,7 @@ The main function of interest is`fs.FS_flux(t, nu, **Z)`.  See `LightCurve.ipynb
 - `epsilon_B`    Fraction of the shock energy in magnetic field
 
 
+### Reverse Shock (RS)
 For reverse shock (RS), import the library with `import rs` in your python code.  
 
 The main function of interest is`rs.RS_flux(t, nu, **Z)`.  See `LightCurve.ipynb` for a simple example.
