@@ -175,10 +175,10 @@ def FS_flux(time_obs,nu_obs,**Z):
     thetaj=theta_j/cgs.deg
     thetaobs=theta_obs/cgs.deg
     fb=(1.-np.cos(thetaj))*2.*cgs.pi/(4.*cgs.pi)
-    if (theta_obs <= theta_j):
-        theta_view=0.
-    else:
-        theta_view=(thetaobs - thetaj)
+    # if (theta_obs <= theta_j):
+    #     theta_view=0.
+    # else:
+    #     theta_view=(thetaobs - thetaj)
     m0=1.e-5
     dm=0.0
 #-------true jet energy: E_j=E_iso*f_b
@@ -201,7 +201,7 @@ def FS_flux(time_obs,nu_obs,**Z):
         if (i==1):
             Gmt[i]=Gm0
             beta=np.sqrt(1.-1/Gmt[i]**2.0)
-            fview=(1.-beta)/(1.-beta*np.cos(theta_view) )
+            #fview=(1.-beta)/(1.-beta*np.cos(theta_view) )
             t[i]=R0/(2.*Gm0**2.0*cgs.c) *(1.+zi)
             mt=m0
         else:
@@ -234,9 +234,14 @@ def FS_flux(time_obs,nu_obs,**Z):
             dtb=dR/(beta*cgs.c)
             dt=dtb/Gmt[i]/(Gmt[i]+np.sqrt(Gmt[i]**2.0-1.0)) *(1.+zi)
 #---------------effect of on-axis and off-axis
-            fview=(1.-beta)/(1.-beta*math.cos(theta_view) )
+            #fview=(1.-beta)/(1.-beta*math.cos(theta_view) )
             t[i]=t[i-1]+dt  #central engine time
         GM21=Gmt[i]
+
+#---------------effect of on-axis and off-axis
+        theta_view=grb.theta_off(GM21,thetaobs,thetaj)
+        fview=grb.aoff(GM21,theta_view)
+
         ti=t[i]/fview  #off-viewer's time
         to[i]=ti
         Ri=Rt[i]
@@ -425,6 +430,8 @@ def FS_flux(time_obs,nu_obs,**Z):
                     t_jet=ti/Tunits[time_unit]
                 fj=thetaj**2. /(1./GM21**2.)
 
+
+
 #-----------Corrections on off-axis jet for flux, see Salafia et al. 2016, arXiv:1601.03735
         # if (thetaj<1./GM21):
         #     thetaj = 1./GM21
@@ -448,7 +455,10 @@ def FS_flux(time_obs,nu_obs,**Z):
             Fvm=(1+zi)*Ne*Pvm/(4.*cgs.pi*(D28*1e28)**2.)*fj*fDN/cgs.uJy
 
             Fvm_IC=1.
-            fviewF=fview**3.
+
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            fviewF=grb.FvOff(GM21,thetaobs,thetaj)
+
 
     #            Fvti=fview**3. *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
             if (Smooth=='Yes'):
