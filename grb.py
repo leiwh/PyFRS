@@ -31,6 +31,57 @@ import numpy as np
 from scipy.special import kv
 from scipy.integrate import quad
 
+#Doppler ratio for off-beaming
+#off-beaming angle
+def theta_off(GM,thetaobs,thetaj):
+    thetacone=1./GM
+    if (thetaj>=thetacone):
+        thetajet=thetaj
+    else:
+        thetajet=thetacone
+
+    if (thetaobs <= thetajet):
+        theta_view=0.
+    else:
+        theta_view=(thetaobs - thetajet)
+    
+    return theta_view
+
+
+def aoff(GM,theta_view):
+    beta=math.sqrt(1.-1./GM**2.0)
+    return (1.-beta)/(1.-beta*math.cos(theta_view) )
+
+
+
+#Off-beaming correction factor to Fv
+def FvOff(GM,thetaobs,thetaj):
+    thetacone=1./GM
+    theta_view=theta_off(GM,thetaobs,thetaj)
+    fview=aoff(GM,theta_view)    
+    if (thetaj<=thetacone):
+        if ((thetaobs>=0.) and (thetaobs<=-thetaj+thetacone)):
+            fviewF=1.
+        elif ((thetaobs>-thetaj+thetacone) and (thetaobs<=thetacone)):
+            fviewF=1.-(thetaobs+thetaj-thetacone)/2./thetaj
+        elif ((thetaobs>thetacone) and (thetaobs<2.*thetacone)):
+            fviewF=fview**2. *fview*(1.+(GM* theta_view)**2.)/2.
+        elif (thetaobs>=2.*thetacone):
+            fviewF=fview**3.
+    else:
+        if ((thetaobs>=0.) and (thetaobs<=thetaj-thetacone)):
+            fviewF=1.
+        elif ((thetaobs>thetaj-thetacone) and (thetaobs<=thetaj)):
+            fviewF=1.-GM*(thetaobs-thetaj+thetacone)/2.
+        elif ((thetaobs>thetaj) and (thetaobs<2.*thetaj)):
+            fviewF=fview**2. *fview*(1.+(GM* theta_view)**2.)/2.
+        elif (thetaobs>=2.*thetaj):
+            fviewF=fview**3. *(1.+(GM* thetaj)**2.)/2.
+    return fviewF
+
+
+
+
 #time for nu_m cross
 def tm(eb,ee,E52,nu15):
     return 0.69*eb**(1/3.)*ee**(4/3.)*E52**(1/3.)*nu15**(-2/3.)
