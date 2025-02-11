@@ -143,6 +143,13 @@ def RS_flux(time_obs,nu_obs,**Z):
     #if ( lgtday<math.log(t[1],10)):
     #     lgtday=math.log(t[1],10)
 
+#-------jet, LoS, view angle
+    theta_obs=theta_obs_j
+    thetaj=theta_j/cgs.deg
+    thetaobs=theta_obs/cgs.deg
+    fb=(1.-math.cos(thetaj))*2.*cgs.pi/(4.*cgs.pi)
+
+
     Gm3x=Gm0
 
     An0=n18 *1.e18**k
@@ -263,6 +270,12 @@ def RS_flux(time_obs,nu_obs,**Z):
 
  
 
+#---------------effect of on-axis and off-axis
+        if (Gm3 <=1.):
+            Gm3=1.+1.e-6
+
+        theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
+        fview=grb.aoff(Gm3,theta_view)
             
 
         ti=t[i]/fview  #off-viewer's time
@@ -325,7 +338,9 @@ def RS_flux(time_obs,nu_obs,**Z):
             Fvm=(1+zi)*Ne3*Pvm/(4.*cgs.pi*(D28*1e28)**2.) /cgs.uJy
 
 #            Fvm_IC=1.
-            fviewF=fview**3.
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
+            #fviewF=fview**3.
 
             if (t[i]<= txo):
                 Fvti=fviewF *grb.Fv_sbpl(v/fview,va,vm,vc,Fvm,pp)  *Funit
