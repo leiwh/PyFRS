@@ -144,7 +144,7 @@ def RS_flux(time_obs,nu_obs,**Z):
     #     lgtday=math.log(t[1],10)
 
 #-------jet, LoS, view angle
-    theta_obs=theta_obs_j
+    #theta_obs=theta_obs
     thetaj=theta_j/cgs.deg
     thetaobs=theta_obs/cgs.deg
     fb=(1.-math.cos(thetaj))*2.*cgs.pi/(4.*cgs.pi)
