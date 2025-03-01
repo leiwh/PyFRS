@@ -33,7 +33,7 @@ Or install with pip:
 pip install PyFRS
 ```
 
-It runs properly with anaconda and VS Code.
+It runs properly with anaconda/edm and VS Code.
 
 ## Usage
 The forward and reverse shock modules can be used separately.
