@@ -1,7 +1,7 @@
 ## PyFRS
 This python code is dedicated to compute the multi-band synchrotron emissions from the Forward-Reverse Shocks of a GRB or TDE jet. It is designed based on the book `The Physics of Gamma-Ray Bursts` by Bing Zhang (2018) and the review paper `A complete reference of the analytical synchrotron external shock models of gamma-ray bursts` by Gao et al. (2013, NewAR, 57, 141). The jet dynamics is calculated numerically using the equations given by Huang, Gou, Dai & Lu (2000, ApJ, 543, 90). 
 
-You can use the code in a similar way to afterglowpy (https://github.com/geoffryan/afterglowpy). See Lightcurve.ipynb for a example. The code is lightweight. One can try a more comprehensive one, VegasAfterglow (https://github.com/YihanWangAstro/VegasAfterglow), by Yihan Wang. 
+You can use the code in a similar way to afterglowpy (https://github.com/geoffryan/afterglowpy). See Lightcurve.ipynb for an example. The code is lightweight. One can try a more comprehensive one, VegasAfterglow (https://github.com/YihanWangAstro/VegasAfterglow), by Yihan Wang. 
 
 
 ## Features
