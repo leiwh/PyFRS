@@ -89,6 +89,8 @@ def FS_flux(time_obs,nu_obs,**Z):
     Nuunits= {'Hz': 1.0, 'keV': cgs.keV2Hz}
 
     dynamic_model='differential'
+    radiative_efficiency = 'No'
+
     # Band_mode='X-ray'
 #        v=Band[Band_mode]
     vlist=list(dict.fromkeys(list(nu_obs)))
@@ -370,6 +372,15 @@ def FS_flux(time_obs,nu_obs,**Z):
         vm=grb.nu_gme(GM21,gm_m, Bc,zi)
         vc=grb.nu_gme(GM21,gm_c, Bc,zi)
         va=grb.nu_aB(Bc,pp,n1,vm,vc,GM21,Ri,zi)
+
+#      inlcude the radiative efficiency in dyanmics : 2025-5-24
+        if radiative_efficiency == 'Yes':
+            if (gm_m > gm_c):
+                epsilon_rad=1.
+            else:
+                epsilon_rad=(gm_c/gm_m)**(2.-p)
+            epsilon_rad=epsilon_rad * epsilon_e
+
 
 #            print('t=',t_n[i]/cgs.day, ', vMax=',vMax_n,', vm=', vm_n, ', vc=',vc_n)
 
