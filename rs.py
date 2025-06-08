@@ -267,6 +267,7 @@ def RS_flux(time_obs,nu_obs,**Z):
             
             fn41=(lsd/Rt[i])**(3.- k)
             Gm341=4.*Gm0**2 *fn41**(-1)/7.
+            Gm341=1.e-6
 
 #-----------Minimum Lorentz factor-------
             gm_m=gm_mx *(t[i]/txo)**(-2.*(3.+g)/(7.*(1+2.*g)) )
