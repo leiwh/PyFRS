@@ -89,7 +89,7 @@ def RS_flux(time_obs,nu_obs,**Z):
 #    jet_break='Yes'
 #    inj_model='No'
 #    Smooth='No'
-    RS_Correction='Yes'  # Correct for the RS
+    RS_Correction='No'  # Correct for the RS
     xi_s=1/3.**0.5  #crrection for radial spreading of RS
     xi_gm34=7/4.0 # correction for gamma34 in RS
 
