@@ -380,7 +380,7 @@ def FS_flux(time_obs,nu_obs,**Z):
             else:
                 if (pp >= 3.):
                     epsilon_rad=gm_m/gm_c
-                elif (pp> 2. and pp < 3.):
+                elif (2. < pp < 3.):
                     epsilon_rad=(gm_c/gm_m)**(2.-pp)
                 else:
                     epsilon_rad= 1.    
