@@ -230,7 +230,10 @@ def Fvmax_analy(epsilon_B, n, E52, D28):
     return 1.1e5*epsilon_B**(1/2.)*E52*n**(1/2.)*D28**(-2.)
 
 def Pvmax(GM, Bc):
-    return cgs.me*cgs.c**2.0*cgs.sigmaT*GM*Bc/(3.*cgs.qe)
+    #Pvm_old = cgs.me*cgs.c**2.0*cgs.sigmaT*GM*Bc/(3.*cgs.qe)
+    phi_cr=1. #see Wijere & Galama 1999
+    Pvm_new=3.**0.5 * phi_cr * cgs.qe**3. *GM*Bc/(cgs.me*cgs.c**2.) # average peak power
+    return Pvm_new
 
 def Fvmax(Pvm,n1,R,D28,z):
     Ne=4.*cgs.pi*R**3.*n1/3
