@@ -395,7 +395,7 @@ def RS_flux(time_obs,nu_obs,**Z):
         para[i,0]=ti/Tunits[ time_unit]
         para[i,1]=Ri
         para[i,2]=Gm3
-        para[i,3]=beta
+        para[i,3]=beta3
         para[i,4]=n3
         para[i,5]=ei
         para[i,6]=Bc
