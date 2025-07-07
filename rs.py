@@ -150,159 +150,130 @@ def RS_flux(time_obs,nu_obs,**Z):
     thetaobs=theta_obs/cgs.deg
     fb=(1.-math.cos(thetaj))*2.*cgs.pi/(4.*cgs.pi)
 
-
+    Gm4=Gm0
     Gm3x=Gm0
+    Gm3=Gm0-1.e-4
+    #Delta0=t90*cgs.c/(1.+zi)
 
     An0=n18 *1.e18**k
-    lsd=((3.- k)*Eiso/(4.*cgs.pi*An0*cgs.mp*cgs.c**2.))**(1./(3. - k))  #Sedov length
-    tx=lsd/(2.*cgs.c* Gm0**(2.+2/(3.- k) ) )    #crossing time, also decelation time
-    if (RS_Correction == 'Yes'):
-        tx=tx* xi_s**(1/3.)  #correct for the radial spreading of RS 
-    txo=tx*(1+zi)
-    txo0=txo
-    Rx=(2.*Gm0**2.0 *cgs.c)*tx
     Ne0=Eiso/(Gm0*cgs.mp*cgs.c**2.)
-        
-    t[1]=Rt[1]/(2.*Gm0**2.0*cgs.c) *(1.+zi)
+    xi=0.
 
-#        txo= t_dec_n*Tunits[ time_unit]
-    t_dec=txo/Tunits[time_unit]
-    tx=txo/(1+zi)
-    Rx=(2.*Gm0**2.0 *cgs.c)*tx
-        
+    Delta0=R0/(3**0.5 * Gm0**2.)
+    Delta=Delta0
 
-        
-    if (k==0.):
-        g=2.
-    else:
-        g=1.
-
-    n1x=n18*(Rx/1.e18)**(-k)
-    n3x=7.*n1x*(lsd/Rx)**(3-k) 
-    fn41x=(lsd/Rx)**(3.- k)
-    Gm341x=4.*Gm0**2 *fn41x**(-1)/7.
-    e3x=4.*Gm0**2. *n1x* cgs.mp* cgs.c**2.
-    if (RS_Correction == 'Yes'):
-        n3x=n3x/xi_gm34  #correct for n3x
-        Gm341x=Gm341x* xi_gm34  #correct for Gm341x 
-
-    Bcx=(8.*cgs.pi*e3x*  epsilon_B)**0.5
-    Ne3x=Ne0 *Gm0**((3- k)/3.)* (Rx/lsd)**((3- k)/2.)
+    #spreading radius
+    Rs=3**0.5 * Gm0**2. *Delta0
+    beta4=math.sqrt(1.-1/Gm0**2.0)
 
 
-#-----------Minimum Lorentz factor-------
-    gm_mx=Gm341x*  epsilon_e* ( p-2.)/( p-1.) *cgs.mp/cgs.me
-#-----------Cooling Lorentez factor
-    gm_cx=6.*cgs.pi*cgs.me*cgs.c/(cgs.sigmaT* Bcx**2 * Gm0* txo/(1.+zi))
-        
+    fview=1.
+    Deltax=Rt[1]/(3**0.5 * Gm0**2.)  
 
-    Pvmx=grb.Pvmax(Gm3x,Bcx)
-
-    #print("### RS:: tx0,gm_cx0,gm_mx0,Rx,n1x0,n3x,e3x,Bcx,fn41x,Gm341x:", txo0,gm_cx,gm_mx,Rx,n1x,n3x,e3x,Bcx,fn41x,Gm341x)
-
-    Gm3=Gm0
     for i in range(1,inum):
-        n1= n18*(Rt[i]/1.e18)**(- k)
-
-        fview=1.
+        ni= n18*(Rt[i]/1.e18)**(- k)
+        n1=ni
 
         Ri=Rt[i]
-        t[i]=Rt[i]/(2.*Gm3**2.0 *cgs.c) *(1.+zi)
+        dR=Ri-Rt[i-1]
+        t[i]=Ri/(2.*Gm3**2.0 *cgs.c) *(1.+zi)
+        ti=t[i]
 
+        # check shell spreading
+#        if (Ri<Rs):
+#            Delta=Delta0
+#        else:
+#            Delta=Ri/(3**0.5 * Gm0**2.)
 
-#            e3=4.*cgs.Gm0**2. *n1*cgs.mp* cgs.c**2.
-        if (t[i]<txo):
-            Gm3=Gm0
-#                t[i]=Rt[i]/(2.*Gm0**2.0 *cgs.c) *(1.+zi)
+        Delta=Ri/(3**0.5 * Gm0**2.)   
 
-            Ne3=Ne0 *Gm0* (Rt[i]/lsd)**((3- k)/2.)
-#                Ne3=Ne0* (t[i]/txo)**((3- k)/2.)
-#-----------Internal energy---------
-            e3=4.*Gm0**2. *n1*cgs.mp* cgs.c**2.
-            n3=7.*n1*(lsd/Rt[i])**(3- k) 
-            fn41=(lsd/Rt[i])**(3.- k)
-            Gm341=4.*Gm0**2 *fn41**(-1)/7.
-            if (RS_Correction == 'Yes'):
-                n3=n3/xi_gm34  #correct for n3
-                Gm341=Gm341* xi_gm34  #correct for Gm341
+        # check RS crossing
+        if (xi< Deltax): #before crossing
+            n4=Eiso/(Gm0*cgs.mp*cgs.c**2. *4.*cgs.pi*Ri**2. *Gm0*Delta)
+            fn41=n4/n1
+            beta3=math.sqrt(1.-1/Gm3**2.0)
+            #Gm34=Gm0*Gm3*(1.-beta3*beta4)
+            #Gm34=(Gm0/Gm3+Gm3/Gm0)/2.
+            #Gm34=0.5*Gm3**2./fn41+ 1.
+            Gm34=((Gm3**2.-1.)/fn41+ 1.)**0.5
+            #print("Gm3=,Gm34=",Gm3,Gm34)
+            gmcat3 = (4.*Gm34+1.)/(3.*Gm34)
+            n43=(gmcat3-1.)/(gmcat3*Gm34+1.)
+            n3=n4/n43
+#            dx=dR/(Gm0*fn41**0.5 * (1.-1/4.))
+            dx=dR/(Gm0*fn41**0.5 * (1.-Gm0/Gm3 * n43))
 
-#-----------B field at comoving frame-------
-#            Bc=grb.Bco2( epsilon_B,e3)
-            Bc=(8.*cgs.pi*e3*  epsilon_B)**0.5
-            
+            xi=xi+dx
+            xp=Gm0/Gm3 * n43* xi
+            Ne3=n3*4.*cgs.pi*Ri**2.* Gm3*xp
+            e3=(Gm34-1.)*n3*cgs.mp*cgs.c**2.
+            Bc=(8.*cgs.pi *e3 * epsilon_B)**0.5
 
+#-----------Max Lorentz factor-------
+            gm_Max = grb.gamma_Max(Bc)
 #-----------Minimum Lorentz factor-------
-#            gm_m=grb.gamma_m2( epsilon_e,GM21,pp,gm_Max)
-            gm_m=Gm341*  epsilon_e* ( p-2.)/( p-1.) *cgs.mp/cgs.me
-#                gm_m= epsilon_e* ( p-2.)/( p-1.) *(e3/n3)/(cgs.me*cgs.c**2.)
+            gm_m=grb.gamma_m2(epsilon_e,Gm34,pp,gm_Max)
 #-----------Cooling Lorentez factor
-#            gm_c=grb.gamma_c(Bc,GM21,ti*fview,zi)
-#            gm_c=grb.gamma_c(Bc,Gm0,t[i],zi)
-            gm_c=6.*cgs.pi*cgs.me*cgs.c/(cgs.sigmaT* Bc**2* Gm0* t[i]/(1.+zi))
+            gm_c=grb.gamma_c(Bc,Gm3,ti*fview,zi)
 
-#                Pvm=grb.Pvmax(Gm3,Bc)
+            #parameters at crossing
+            e3x=e3
+            n3x=n3
+            n1x=n1
+            fn41x=fn41
+            Bcx=Bc
+            txo=ti
+            Rx=Ri
+            Gm3x=Gm3
+            Gm34x=Gm34
+            gm_mx=gm_m
+            gm_cx=gm_c
+            Deltax=Delta
+
+            #Gm3=(fn41*(Gm34**2.-1.) +1.)**0.5
+            #Gm3=Gm0-1.e-4
+            Gm3=grb.Gammat(Gm4,ni, Eiso, Ri,R0)
+
+            #print("Gm34=, Gm3=, Delta=, Delta0=, xi=",Gm34,Gm3,Delta,Delta0,fn41**0.5/Gm0)
+
+        else: #after crossing
+            Ne3=Ne0
+
+            gthick=(7-2.*k)/2.
+            gthin=2-k/2.
+            g= ((Gm34-1.)*gthick+gthin)/Gm34
+            Gm3=Gm3x*(Ri/Rx)**(-g)
+            n3=n3x*(Ri/Rx)**(-2.*g)
+
+            if (Gm3 <=1.):
+                Gm3=1.+1.e-6
+
+            gthick_e=(26-4.*k)/3.
+            gthin_e=4.-k
+            g_e= ((Gm34-1.)*gthick_e+gthin_e)/Gm34
+            e3=e3x*(Ri/Rx)**(-g_e)
+
+            Bc=(8.*cgs.pi *e3 * epsilon_B)**0.5
+
+            gm_Max = grb.gamma_Max(Bc)
+            gm_m=gm_mx*(Ri/Rx)**(-g_e+2*g)
+            gm_c=gm_cx*(Ri/Rx)**(-g_e+2*g)
+
+            Pvmx=grb.Pvmax(Gm3x,Bcx)
+
+            #print("### RS:: tx,gm_cx0,gm_mx0,Rx,n1x0,n3x,e3x,Bcx,fn41x,Gm341x:", txo,gm_cx,gm_mx,Rx,n1x,n3x,e3x,Bcx,fn41x,Gm34x)
 
 
-#                dL=Ne3/(4.*cgs.pi*Rt[i]**2. *n3)
 
-#                n3x=n3
-#                e3x=e3
-#                Bcx=Bc
-#                gm_mx=gm_m
-#                gm_cx=gm_c
-#                Rx=Rt[i]
-                
-        else:
-#                t[i]= txo*  (Rt[i]/Rx)**(1+2.*g)
-#                t[i]=Rt[i]/(2.*Gm3**2.0*cgs.c) *(1.+zi)
-            Gm3=Gm3x* (t[i]/txo)**(-g/(1+2.*g))
-
-            Ne3= Ne0
-            n3= n3x *(t[i]/txo)**(-6.*(3+g)/(7 *(1+2.*g)) )
-            e3= e3x* (t[i]/txo)**(-8.*(3+g)/(7.*(1+2.*g)) )
-
-#-----------B field at comoving frame-------
-#                Bc=(8.*cgs.pi *e3 * epsilon_B)**0.5
-            Bc=Bcx* (t[i]/txo)**(-4.*(3+g)/(7.*(1+2.*g)) )
-            
-            fn41=(lsd/Rt[i])**(3.- k)
-            Gm341=4.*Gm0**2 *fn41**(-1)/7.
-            Gm341=1.e-6
-
-#-----------Minimum Lorentz factor-------
-            gm_m=gm_mx *(t[i]/txo)**(-2.*(3.+g)/(7.*(1+2.*g)) )
-#-----------Cooling Lorentez factor
-            gm_c=gm_cx *(t[i]/txo)**(-2.*(3.+g)/(7.*(1+2.*g)) )
-
-#                Pvm=Pvmx* (t[i]/txo)**(-4.*(3+g)/(7.*(1+2.*g)) -g/(1+2.*g) )
-
-#                t[i]=Rt[i]/(2.*Gm3**2.0*cgs.c) *(1.+zi)
-#                dL=Ne3/(4.*cgs.pi*Rx**2. *n3x)
-
- 
-
-#---------------effect of on-axis and off-axis
-        if (Gm3 <=1.):
-            Gm3=1.+1.e-6
-
+        #print("Gmma3=",Gm3x)
         theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
         fview=grb.aoff(Gm3,theta_view)
-            
 
-        ti=t[i]/fview  #off-viewer's time
-        to[i]=ti
+
+        to[i]=ti/fview  #off-viewer's time
         lgt[i]=math.log(ti/Tunits[ time_unit],10)
-
         ei=e3
 
-        beta=0.1
-#            beta=math.sqrt(2.*(Gm3-1))
-#            beta=math.sqrt(1.-1/Gm3**2.0)
-            
-#-----------Max Lorentz factor-------
-        gm_Max = grb.gamma_Max(Bc)
-             
-        
 #-----------v_Max, v_m, v_c, v_a----------
         vMax = grb.nu_gme(Gm3,gm_Max, Bc,zi)
         vm=grb.nu_gme(Gm3,gm_m, Bc,zi)
@@ -345,7 +316,6 @@ def RS_flux(time_obs,nu_obs,**Z):
 #            Fvm=grb.Fvmax(Pvm,n1,Ri,D28,zi)*fj*fDN /cgs.uJy
 
         for l,v in enumerate(vlist):
-
             Fvm=(1+zi)*Ne3*Pvm/(4.*cgs.pi*(D28*1e28)**2.) /cgs.uJy
 
 #            Fvm_IC=1.
@@ -441,6 +411,7 @@ def RS_flux(time_obs,nu_obs,**Z):
         para[i,16]=vMax*fview
         para[i,17]=Fvm
 #            para[i,18]=Fvm_IC
+        para[i,18]=Gm34
 
 
 #-----------small correction
