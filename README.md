@@ -17,6 +17,8 @@ You can use the code in a similar way to afterglowpy (https://github.com/geoffry
  - Density jump.
 
 `rs.py` computes synchrotron emission from the reverse shock of a jet/outflow.
+- rs.py is updated version, rs_scaling.py is old version based on simple scalings;
+- rs_scaling.py includes only thin shell case.
 
 Future:
 
