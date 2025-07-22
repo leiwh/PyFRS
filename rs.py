@@ -232,7 +232,8 @@ def RS_flux(time_obs,nu_obs,**Z):
 
             #Gm3=(fn41*(Gm34**2.-1.) +1.)**0.5
             #Gm3=Gm0-1.e-4
-            Gm3=grb.Gammat(Gm4,ni, Eiso, Ri,R0)
+            #Gm3=grb.Gammat(Gm4,ni, Eiso, Ri,R0)
+            Gm3=Gm4*(Gm34-(Gm34**2. -1.)**0.5) #updated: 2025-07-18, can be used for both thin and thick shell
 
             #print("Gm34=, Gm3=, Delta=, Delta0=, xi=",Gm34,Gm3,Delta,Delta0,fn41**0.5/Gm0)
 
