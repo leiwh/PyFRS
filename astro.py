@@ -1,12 +1,12 @@
 #==================================Astrophysics Fundaments=================================
 #Credit: Weihua Lei
-#Institue for Particle Physics and Astrophysics, Huazhong University of Science and Technology (HUST), Wuhan, China
+#Department of Astronomy, School of Physics, Huazhong University of Science and Technology (HUST), Wuhan, China
 #Email: leiwh@hust.edu.cn
 #Homepage: http://www.physics.unlv.edu/~leiwh/pygrb/
 #
 #  Description:
 #Created on Tue Aug 16 19:39:07 2011, University of Nevada Las Vegas (UNLV), USA
-#Current version: 2014-11-25
+#Current version: 2026-04-10
 #
 #
 #==============================================================================
