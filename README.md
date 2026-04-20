@@ -40,7 +40,7 @@ pip install PyFRS
 It runs properly with anaconda/edm and VS Code.
 
 You can also install it in openclaw:
-ask opencaw install PyFRS with pip, and then create your own skills with skill-create.
+say ``please install PyFRS with pip'' in openclaw, and then create your own PyFRS skills with skill-create.
 
 ## Usage
 The forward and reverse shock modules can be used separately.
