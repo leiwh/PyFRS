@@ -9,7 +9,7 @@ except ImportError:
 
 def FS_lc(v,**Z):
 
-    t=np.geomspace(1.e3,1.e8,500)
+    t=np.geomspace(1.e1,1.e8,500)
     nu=np.empty(t.shape)
     nu[:]=v
 
