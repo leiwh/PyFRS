@@ -11,6 +11,8 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
+#from PyFRS import cgs,astro,grb
+
 try:
     from . import cgs,astro,grb
 except ImportError:
@@ -89,6 +91,7 @@ def FS_flux(time_obs,nu_obs,**Z):
     Nuunits= {'Hz': 1.0, 'keV': cgs.keV2Hz}
 
     dynamic_model='differential'
+    #dynamic_model='analytical'
     radiative_efficiency = 'No'
 
     # Band_mode='X-ray'
@@ -98,10 +101,12 @@ def FS_flux(time_obs,nu_obs,**Z):
     time_unit='Second'
     nu_unit='Hz'
     jet_break='Yes'
+    #jet_break='No'
     inj_model='No'
     Smooth='No'
     # SSC = 'Yes'
     # XIC = 'Yes'
+    off_cr='Yes'
 
 
 # #-------refresh output parameters for jet
@@ -119,7 +124,7 @@ def FS_flux(time_obs,nu_obs,**Z):
 
     n1=n18
     pp=p
-    inum=500
+    inum=1500
     # inumv=500
     # inump=20
 
@@ -127,7 +132,7 @@ def FS_flux(time_obs,nu_obs,**Z):
     t=np.logspace(-4., 3.0,inum)
     to=np.logspace(-4., 3.0,inum)  # t_observe
 
-    Rt=np.logspace(14.0,21.0,inum)        # original value: 14. to 21.
+    Rt=np.logspace(12.0,21.0,inum)        # original value: 14. to 21.
     Gmt=np.logspace(2.,-5.,inum)
 
 #        Coolingt=np.zeros((inum,6))
@@ -161,7 +166,8 @@ def FS_flux(time_obs,nu_obs,**Z):
     R0=Rt[1]
     Eiso=1.e52 *E52
     t[0]=0.
-    t[1]=R0/(2.*Gm0**2.0*cgs.c*cgs.day)
+    #t[1]=R0/(2.*Gm0**2.0*cgs.c*cgs.day)
+    t[1]=R0/(2.*Gm0**2.0*cgs.c)
     to[0]=0.
     to[1]=t[1]
 
@@ -241,8 +247,19 @@ def FS_flux(time_obs,nu_obs,**Z):
         GM21=Gmt[i]
 
 #---------------effect of on-axis and off-axis
-        theta_view=grb.theta_off(GM21,thetaobs,thetaj)
-        fview=grb.aoff(GM21,theta_view)
+        if (off_cr=='Yes'):
+            # effective cretions but not reasonable
+            theta_view=grb.theta_off_cr(GM21,thetaobs,thetaj)
+            fview=grb.aoff(GM21,theta_view)
+            fviewF=fview**3.
+        else:
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            theta_view=grb.theta_off(GM21,thetaobs,thetaj)
+            fview=grb.aoff(GM21,theta_view)
+            fviewF=grb.FvOff(GM21,thetaobs,thetaj)
+
+
+#        fview=grb.aoff(GM21,theta_view)
 
         ti=t[i]/fview  #off-viewer's time
         to[i]=ti
@@ -282,7 +299,7 @@ def FS_flux(time_obs,nu_obs,**Z):
         gm_m=grb.gamma_m2(epsilon_e,GM21,pp,gm_Max)
         gm_m0=gm_m
 #-----------Cooling Lorentez factor
-        gm_c=grb.gamma_c(Bc,GM21,ti*fview,zi)
+        gm_c=grb.gamma_c(Bc,GM21,t[i],zi)
         gm_c0=gm_c
 
 #----------For deep Newtonian Phase----
@@ -387,7 +404,6 @@ def FS_flux(time_obs,nu_obs,**Z):
                 #epsilon_rad=(gm_c/gm_m)**(2.-pp)
             epsilon_rad=epsilon_rad * epsilon_e
 
-
 #            print('t=',t_n[i]/cgs.day, ', vMax=',vMax_n,', vm=', vm_n, ', vc=',vc_n)
 
 #            vat[i,0]=np.log10(ti/Tunits[self.time_unit])
@@ -473,8 +489,6 @@ def FS_flux(time_obs,nu_obs,**Z):
 
             Fvm_IC=1.
 
-#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
-            fviewF=grb.FvOff(GM21,thetaobs,thetaj)
 
 
     #            Fvti=fview**3. *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
