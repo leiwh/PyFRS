@@ -9,6 +9,8 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
+#from PyFRS import cgs,astro,grb
+
 try:
     from . import cgs,astro,grb
 except ImportError:
@@ -66,6 +68,7 @@ def RS_flux(time_obs,nu_obs,**Z):
     n1=n18
     pp=p
 
+    off_cr='Yes'
 
     mytime=1.*cgs.day
     
@@ -89,9 +92,8 @@ def RS_flux(time_obs,nu_obs,**Z):
 #    jet_break='Yes'
 #    inj_model='No'
 #    Smooth='No'
-    RS_Correction='No'  # Correct for the RS
-    xi_s=1/3.**0.5  #crrection for radial spreading of RS
-    xi_gm34=7/4.0 # correction for gamma34 in RS
+
+
 
 #-------Initialize the time, gamma, Fv arries in Log space
     inum=500
@@ -156,8 +158,6 @@ def RS_flux(time_obs,nu_obs,**Z):
     An0=n18 *1.e18**k
     lsd=((3.- k)*Eiso/(4.*cgs.pi*An0*cgs.mp*cgs.c**2.))**(1./(3. - k))  #Sedov length
     tx=lsd/(2.*cgs.c* Gm0**(2.+2/(3.- k) ) )    #crossing time, also decelation time
-    if (RS_Correction == 'Yes'):
-        tx=tx* xi_s**(1/3.)  #correct for the radial spreading of RS 
     txo=tx*(1+zi)
     txo0=txo
     Rx=(2.*Gm0**2.0 *cgs.c)*tx
@@ -179,16 +179,12 @@ def RS_flux(time_obs,nu_obs,**Z):
 
     n1x=n18*(Rx/1.e18)**(-k)
     n3x=7.*n1x*(lsd/Rx)**(3-k) 
+
+    e3x=4.*Gm0**2. *n1x* cgs.mp* cgs.c**2.
+    Bcx=(8.*cgs.pi*e3x*  epsilon_B)**0.5
     fn41x=(lsd/Rx)**(3.- k)
     Gm341x=4.*Gm0**2 *fn41x**(-1)/7.
-    e3x=4.*Gm0**2. *n1x* cgs.mp* cgs.c**2.
-    if (RS_Correction == 'Yes'):
-        n3x=n3x/xi_gm34  #correct for n3x
-        Gm341x=Gm341x* xi_gm34  #correct for Gm341x 
-
-    Bcx=(8.*cgs.pi*e3x*  epsilon_B)**0.5
     Ne3x=Ne0 *Gm0**((3- k)/3.)* (Rx/lsd)**((3- k)/2.)
-
 
 #-----------Minimum Lorentz factor-------
     gm_mx=Gm341x*  epsilon_e* ( p-2.)/( p-1.) *cgs.mp/cgs.me
@@ -220,16 +216,13 @@ def RS_flux(time_obs,nu_obs,**Z):
 #-----------Internal energy---------
             e3=4.*Gm0**2. *n1*cgs.mp* cgs.c**2.
             n3=7.*n1*(lsd/Rt[i])**(3- k) 
-            fn41=(lsd/Rt[i])**(3.- k)
-            Gm341=4.*Gm0**2 *fn41**(-1)/7.
-            if (RS_Correction == 'Yes'):
-                n3=n3/xi_gm34  #correct for n3
-                Gm341=Gm341* xi_gm34  #correct for Gm341
 
 #-----------B field at comoving frame-------
 #            Bc=grb.Bco2( epsilon_B,e3)
             Bc=(8.*cgs.pi*e3*  epsilon_B)**0.5
             
+            fn41=(lsd/Rt[i])**(3.- k)
+            Gm341=4.*Gm0**2 *fn41**(-1)/7.
 
 #-----------Minimum Lorentz factor-------
 #            gm_m=grb.gamma_m2( epsilon_e,GM21,pp,gm_Max)
@@ -285,8 +278,21 @@ def RS_flux(time_obs,nu_obs,**Z):
         if (Gm3 <=1.):
             Gm3=1.+1.e-6
 
-        theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
-        fview=grb.aoff(Gm3,theta_view)
+
+#---------------effect of on-axis and off-axis
+        if (off_cr=='Yes'):
+            # effective cretions but not reasonable
+            theta_view=grb.theta_off_cr(Gm3,thetaobs,thetaj)
+            fview=grb.aoff(Gm3,theta_view)
+            fviewF=fview**3.
+        else:
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
+            fview=grb.aoff(Gm3,theta_view)
+            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
+
+#        theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
+#        fview=grb.aoff(Gm3,theta_view)
             
 
         ti=t[i]/fview  #off-viewer's time
@@ -350,7 +356,7 @@ def RS_flux(time_obs,nu_obs,**Z):
 
 #            Fvm_IC=1.
 #-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
-            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
+#            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
             #fviewF=fview**3.
 
             if (t[i]<= txo):
@@ -442,6 +448,7 @@ def RS_flux(time_obs,nu_obs,**Z):
         para[i,17]=Fvm
 #            para[i,18]=Fvm_IC
         para[i,18]=Gm341+1.
+
 
 #-----------small correction
     Gmt[0]=Gmt[1]
