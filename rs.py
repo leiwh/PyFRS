@@ -9,6 +9,8 @@ import scipy.optimize
 
 #-----------My Library---------
 #Credit: Weihua Lei
+#from PyFRS import cgs,astro,grb
+
 try:
     from . import cgs,astro,grb
 except ImportError:
@@ -65,6 +67,8 @@ def RS_flux(time_obs,nu_obs,**Z):
 
     n1=n18
     pp=p
+
+    off_cr='Yes'
 
 
     mytime=1.*cgs.day
@@ -265,10 +269,21 @@ def RS_flux(time_obs,nu_obs,**Z):
             #print("### RS:: tx,gm_cx0,gm_mx0,Rx,n1x0,n3x,e3x,Bcx,fn41x,Gm341x:", txo,gm_cx,gm_mx,Rx,n1x,n3x,e3x,Bcx,fn41x,Gm34x)
 
 
+#---------------effect of on-axis and off-axis
+        if (off_cr=='Yes'):
+            # effective cretions but not reasonable
+            theta_view=grb.theta_off_cr(Gm3,thetaobs,thetaj)
+            fview=grb.aoff(Gm3,theta_view)
+            fviewF=fview**3.
+        else:
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
+            fview=grb.aoff(Gm3,theta_view)
+            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
 
         #print("Gmma3=",Gm3x)
-        theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
-        fview=grb.aoff(Gm3,theta_view)
+#        theta_view=grb.theta_off(Gm3,thetaobs,thetaj)
+#        fview=grb.aoff(Gm3,theta_view)
 
 
         to[i]=ti/fview  #off-viewer's time
@@ -321,7 +336,7 @@ def RS_flux(time_obs,nu_obs,**Z):
 
 #            Fvm_IC=1.
 #-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
-            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
+#            fviewF=grb.FvOff(Gm3,thetaobs,thetaj)
             #fviewF=fview**3.
 
             if (t[i]<= txo):
