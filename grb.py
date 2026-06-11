@@ -48,10 +48,28 @@ def theta_off(GM,thetaobs,thetaj):
     return theta_view
 
 
+# effective cretions for off-axis, but not reasonable
+def theta_off_cr(GM,thetaobs,thetaj):
+    thetajet=thetaj
+    thetacone=1./GM
+
+    if (thetaobs <= thetajet):
+        theta_view=0.
+    else:
+        if (thetaj>=thetacone):        
+            theta_view=(thetaobs - thetajet+thetacone)
+        else:    
+            theta_view=thetaobs
+    return theta_view
+
+
 def aoff(GM,theta_view):
     beta=math.sqrt(1.-1./GM**2.0)
     return (1.-beta)/(1.-beta*math.cos(theta_view) )
 
+def aoff_simp(GM,theta_view):
+    beta=math.sqrt(1.-1./GM**2.0)
+    return 1./(1.+(GM* theta_view)**2. )
 
 
 #Off-beaming correction factor to Fv
