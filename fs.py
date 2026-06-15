@@ -124,7 +124,7 @@ def FS_flux(time_obs,nu_obs,**Z):
 
     n1=n18
     pp=p
-    inum=1500
+    inum=500
     # inumv=500
     # inump=20
 
