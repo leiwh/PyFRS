@@ -106,3 +106,5 @@ Gao, H., Lei, W.-H., Zou, Y.-C., Wu, X.-F., & Zhang, B. 2013, NewAR, 57, 141
 Lei, W.-H., Yuan, Q., Zhang, B., & Wang, D. 2016, ApJ, 816, 20
 
 Zhu, Z.-P., Xu, D., Fynbo, J. P. U., et al. 2023, ApJ, 948, 30
+
+Fu, S.-Y., Xu, D., Lei, W.-H., et al. 2024, ApJ, 977, 197
