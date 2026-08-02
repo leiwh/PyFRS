@@ -48,7 +48,7 @@ def theta_off(GM,thetaobs,thetaj):
     return theta_view
 
 
-# effective cretions for off-axis, but not reasonable
+# effective corretions for off-axis, but not reasonable
 def theta_off_cr(GM,thetaobs,thetaj):
     thetajet=thetaj
     thetacone=1./GM
