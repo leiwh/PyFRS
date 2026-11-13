@@ -25,23 +25,18 @@ def FS_flux(time_obs,nu_obs,**Z):
     log_obs_time = np.log10(time_obs)
 
 #-------Unpack parameters
+    inj_model = 'No'      # 默认无注入(Z 提供 'inject_model' 时覆盖)
     for key,value in Z.items():
         if key == 'z':              # Redshift
             z = value
         elif key == 'k':            # Medium density profile index
             k = value
         elif key == 'SSC':          # SSC
-            # if value == 1:
-            #     SSC = 'Yes'
-            # else:
-            #     SSC = 'No'
             SSC = value
         elif key == 'XIC':          # EIC
-            # if value == 1:
-            #     XIC = 'Yes'
-            # else:
-            #     XIC = 'No'
             XIC = value
+        elif key == 'inject_model': # 注入模型('fallback'/'No'; 适配器传入)
+            inj_model = value
         elif key == 'E0':           # Isotropic-equivalent energy in 10^52 erg
             E52 = value/1.0e52
         elif key == 'Gamma0':       # Initial bulk Lorentz factor
@@ -58,6 +53,17 @@ def FS_flux(time_obs,nu_obs,**Z):
             epsilon_e = value
         elif key == 'epsilon_B':    # Fraction of the shock energy in magnetic field
             epsilon_B = value
+        elif key == 'L0':           # Injection luminosity [erg/s]
+            Lj0 = value
+        elif key == 't0':           # Injection start time [s]
+            t_ej = value
+        elif key == 'tp':           # Injection plateau end time [s]
+            t_ejp = value
+        elif key == 'te':           # Injection end time [s]
+            t_ejf = value
+        elif key == 'q':            # Spindown index
+            q = value
+
 
 
 
@@ -72,11 +78,11 @@ def FS_flux(time_obs,nu_obs,**Z):
     t_djs=0.
     t_dje=0.
     
-    Lj50=0.
-    q=0.1
-    t_ej=1000.
-    t_ejp=2000.
-    t_ejf=5000.
+    # Lj50=0.
+    # q=0.1
+    # t_ej=1000.
+    # t_ejp=2000.
+    # t_ejf=5000.
     
     mytime=1.*cgs.day
     
@@ -91,8 +97,7 @@ def FS_flux(time_obs,nu_obs,**Z):
     Nuunits= {'Hz': 1.0, 'keV': cgs.keV2Hz}
 
     dynamic_model='differential'
-    #dynamic_model='analytical'
-    radiative_efficiency = 'No'
+    radiative_efficiency = 'Yes'
 
     # Band_mode='X-ray'
 #        v=Band[Band_mode]
@@ -101,12 +106,10 @@ def FS_flux(time_obs,nu_obs,**Z):
     time_unit='Second'
     nu_unit='Hz'
     jet_break='Yes'
-    #jet_break='No'
-    inj_model='No'
+    # inj_model='fallback'
     Smooth='No'
     # SSC = 'Yes'
     # XIC = 'Yes'
-    off_cr='Yes'
 
 
 # #-------refresh output parameters for jet
@@ -132,7 +135,7 @@ def FS_flux(time_obs,nu_obs,**Z):
     t=np.logspace(-4., 3.0,inum)
     to=np.logspace(-4., 3.0,inum)  # t_observe
 
-    Rt=np.logspace(12.0,21.0,inum)        # original value: 14. to 21.
+    Rt=np.logspace(14.0,21.0,inum)        # original value: 14. to 21.
     Gmt=np.logspace(2.,-5.,inum)
 
 #        Coolingt=np.zeros((inum,6))
@@ -166,8 +169,7 @@ def FS_flux(time_obs,nu_obs,**Z):
     R0=Rt[1]
     Eiso=1.e52 *E52
     t[0]=0.
-    #t[1]=R0/(2.*Gm0**2.0*cgs.c*cgs.day)
-    t[1]=R0/(2.*Gm0**2.0*cgs.c)
+    t[1]=R0/(2.*Gm0**2.0*cgs.c*cgs.day)
     to[0]=0.
     to[1]=t[1]
 
@@ -225,17 +227,20 @@ def FS_flux(time_obs,nu_obs,**Z):
                 tj=t[i-1]
                 if (inj_model == 'No'):
                     dE=0.
-                
                 elif ((tj > t_ej) and (tj< t_ejf)):
                     ts=t_ej
                     if (inj_model == 'fallback'):
                         tp=t_ejp
                         s=0.5
-                        Lj=fb*Lj50*1.e50 *(0.5*((tj-ts)/(tp-ts))**(-0.5*s) + 0.5*((tj-ts)/(tp-ts))**(q*s) )**(-1./s)
+                        Lj=fb*Lj0*(0.5*((tj-ts)/(tp-ts))**(-0.5*s) + 0.5*((tj-ts)/(tp-ts))**(q*s) )**(-1./s)
+                    elif (inj_model == 'powerlaw'):
+                        Lj=fb*Lj0*(tj/ts)**(-q)
                     else:
-                        Lj=fb*Lj50*1.e50* (tj/ts)**(-q)
+                        raise ValueError("Invalid injection model: {}. Please use 'No', 'fallback' or 'powerlaw'.".format(inj_model))
 
                     dE=(1.-beta)/beta/cgs.c/cgs.c/cgs.c * Lj*dR
+                else:
+                    dE=0.   # 注入窗口之外(未开始/已结束): 无能量注入
                 dGm=-((Gmt[i-1]**2.-1.)*dm - dE)/(Mej0+mt*epsilon_rad+2.*(1.-epsilon_rad)*Gmt[i-1]*mt)
                 Gmt[i]=Gmt[i-1]+dGm
             beta=np.sqrt(1.-1/Gmt[i]**2.0)
@@ -247,19 +252,8 @@ def FS_flux(time_obs,nu_obs,**Z):
         GM21=Gmt[i]
 
 #---------------effect of on-axis and off-axis
-        if (off_cr=='Yes'):
-            # effective cretions but not reasonable
-            theta_view=grb.theta_off_cr(GM21,thetaobs,thetaj)
-            fview=grb.aoff(GM21,theta_view)
-            fviewF=fview**3.
-        else:
-#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
-            theta_view=grb.theta_off(GM21,thetaobs,thetaj)
-            fview=grb.aoff(GM21,theta_view)
-            fviewF=grb.FvOff(GM21,thetaobs,thetaj)
-
-
-#        fview=grb.aoff(GM21,theta_view)
+        theta_view=grb.theta_off(GM21,thetaobs,thetaj)
+        fview=grb.aoff(GM21,theta_view)
 
         ti=t[i]/fview  #off-viewer's time
         to[i]=ti
@@ -299,7 +293,7 @@ def FS_flux(time_obs,nu_obs,**Z):
         gm_m=grb.gamma_m2(epsilon_e,GM21,pp,gm_Max)
         gm_m0=gm_m
 #-----------Cooling Lorentez factor
-        gm_c=grb.gamma_c(Bc,GM21,t[i],zi)
+        gm_c=grb.gamma_c(Bc,GM21,ti*fview,zi)
         gm_c0=gm_c
 
 #----------For deep Newtonian Phase----
@@ -395,14 +389,9 @@ def FS_flux(time_obs,nu_obs,**Z):
             if (gm_m > gm_c):
                 epsilon_rad=1.
             else:
-                if (pp >= 3.):
-                    epsilon_rad=gm_m/gm_c
-                elif (2. < pp < 3.):
-                    epsilon_rad=(gm_c/gm_m)**(2.-pp)
-                else:
-                    epsilon_rad= 1.    
-                #epsilon_rad=(gm_c/gm_m)**(2.-pp)
+                epsilon_rad=(gm_c/gm_m)**(2.-pp)
             epsilon_rad=epsilon_rad * epsilon_e
+
 
 #            print('t=',t_n[i]/cgs.day, ', vMax=',vMax_n,', vm=', vm_n, ', vc=',vc_n)
 
@@ -489,6 +478,8 @@ def FS_flux(time_obs,nu_obs,**Z):
 
             Fvm_IC=1.
 
+#-----------Corrections on off-axis jet for flux, see Beniamini et al. 2023
+            fviewF=grb.FvOff(GM21,thetaobs,thetaj)
 
 
     #            Fvti=fview**3. *grb.Fv(v/fview,va,vm,vc,Fvm,pp)  *Funit
